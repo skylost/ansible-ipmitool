@@ -1,0 +1,35 @@
+---
+# tasks file for ipmitool
+#
+- name: install ipmitool
+  package: name=ipmitool state=latest
+
+- name: load kernel module
+  modprobe: name={{ item }} state=present
+  with_items:
+    - ipmi_si
+    - ipmi_devintf
+
+- name: update network settings ipmi
+  command: "ipmitool {{ item }}"
+  with_items:
+    - lan set 1 ipsrc static
+    - lan set 1 ipaddr 192.168.50.50
+    - lan set 1 netmask 255.255.255.0
+    - lan set 1 defgw ipaddr 192.168.50.1
+    - lan set 1 access on
+    - lan set 1 auth ADMIN MD5
+    - channel setaccess 1 3 ipmi=on privilege=4  link=on callin=on privilege=4
+
+- name: import secret variable file
+  include_vars: "vault.yml"
+  no_log: true
+
+- name: update user settings ipmi
+  command: ipmitool user {{ item }}
+  with_items:
+    - set name 3 weezhard
+    - enable 3
+    - set password 3 {{ ipmi_weezhard_password }}
+
+- debug: msg={{ ipmi_weezhard_password }}
