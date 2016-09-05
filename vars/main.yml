@@ -1,2 +1,15 @@
 ---
 # vars file for ipmitool
+ipmitool_users:
+  root:
+    id: 2
+    name: root
+    password: MzNjMWNiYzllZTg2N
+  ansible:
+    id: 3
+    name: ansible
+    password: F1CONApxVPgSVnbLG
+  helion:
+    id: 4
+    name: helion
+    password: test1234
